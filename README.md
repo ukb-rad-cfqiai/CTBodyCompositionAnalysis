@@ -1,4 +1,4 @@
-# CT_BodyCompositionAnalysis
+# CTBodyCompositionAnalysis
 ![Fig1](https://github.com/ukb-rad-cfqiai/CT_BodyCompositionAnalysis/assets/98951773/9684070a-b2fa-4bf5-bd23-a038cf62d926)
 
 # Installation
@@ -19,7 +19,7 @@ to install the necessary libraries.
 
 Run the slice extraction by:
 ```
-cd /.../CT_BodyCompositionAnalysis/SliceExctraction
+cd /.../CTBodyCompositionAnalysis/SliceExctraction
 bash slice_extraction.sh
 ```
 Adapt *data\_path* and *model\_path* in run\_pred.sh.
@@ -27,7 +27,7 @@ Adapt *data\_path* and *model\_path* in run\_pred.sh.
 ## Tissue Segmentation
 Run the tissue segmentation by:
 ```
-cd /.../CT_BodyCompositionAnalysis/TissueSegmentation
+cd /.../CTBodyCompositionAnalysis/TissueSegmentation
 python tissue_segmentation.py --input_path /path/to/L3L4Slices.nii.gz
 ```
 

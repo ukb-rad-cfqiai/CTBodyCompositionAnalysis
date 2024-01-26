@@ -1,12 +1,12 @@
 # CTBodyCompositionAnalysis
-![Fig1](https://github.com/ukb-rad-cfqiai/CT_BodyCompositionAnalysis/assets/98951773/9684070a-b2fa-4bf5-bd23-a038cf62d926)
+![Fig1](https://github.com/ukb-rad-cfqiai/CTBodyCompositionAnalysis/assets/98951773/e2fcf0b3-7f0b-48bd-9ddc-747ee9a8db48)
 
 # Installation
 Please use python version 3.9.
 For the slice extraction model, you need to install nnU-Net (Version 1).
 Please follow the instructions at https://github.com/MIC-DKFZ/nnUNet/tree/nnunetv1 and install the pipeline as an **integrative framework**.
 
-Then adapt the nnU-Net code to add the quality control method for slice extraction by copying the python scripts in /CT_BodyCompositionAnalysis/SliceExtraction/nnUNet\_code folder (**predict.py** and **predict_simple.py**) to /...data\_path\_nnunet.../nnunet/inference.
+Then adapt the nnU-Net code to add the quality control method for slice extraction by copying the python scripts in /CTBodyCompositionAnalysis/SliceExtraction/nnUNet\_code folder (**predict.py** and **predict_simple.py**) to /...data\_path\_nnunet.../nnunet/inference.
 
 Run
 ```

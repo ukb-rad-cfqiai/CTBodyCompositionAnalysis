@@ -36,6 +36,8 @@ CLASS_MUSCLE_LOW = 5
 WINDOW_MUSCLE_LOW = [ -29,  29  ]
 WINDOW_MUSCLE_HIGH  = [ 29,  100  ] 
 WINDOW_FAT = [ -190 , -30  ]
+TARGET_IMSIZE = (512, 512)
+TARGET_IMRANGE = (-400, 600)
 
 def parse_args():
 
@@ -114,9 +116,8 @@ def main():
     for path in nii_paths:   
         niiFile = nib.load(path)
         im = np.squeeze(niiFile.get_fdata())
-        im[im>600] = 600; im[im<-400] = -400
+        im[im>TARGET_IMRANGE[1]] = TARGET_IMRANGE[1]; im[im<TARGET_IMRANGE[0]] = TARGET_IMRANGE[0]
         imsize = im.shape
-        target_imsize = (512, 512)
         header = niiFile.header
         affine = niiFile.affine
         voxelspacing = np.array(header.get_zooms())
@@ -160,13 +161,28 @@ def main():
             logging.info(f'WARNING: {path} has empty image ...')
             
         cur_imsize = im.shape
-        if np.any( np.asarray(cur_imsize) != np.asarray(target_imsize)):
-            scaleFactor = target_imsize[0]/cur_imsize[0]
-            im = resize(im, target_imsize, order=3, anti_aliasing=False, mode='constant', cval=0)
-            voxelspacing[0] /= scaleFactor; voxelspacing[1] /= scaleFactor; 
+        if np.any( np.asarray(cur_imsize) != np.asarray(TARGET_IMSIZE)):
+            def resize_and_pad_image(im, target_imsize=(512, 512), padding_mode='constant', cval=-400):
+                y_scale = target_imsize[0] / im.shape[0]
+                x_scale = target_imsize[1] / im.shape[1]
+                scale_factor = min(y_scale, x_scale)
+                new_size = (int(im.shape[0] * scale_factor), int(im.shape[1] * scale_factor))
+                resized_im = resize(im, new_size, order=3, anti_aliasing=True, mode='constant', cval=cval)
+                
+                pad_y = (target_imsize[0] - resized_im.shape[0]) // 2
+                pad_x = (target_imsize[1] - resized_im.shape[1]) // 2
+                padded_im = np.pad(
+                    resized_im,
+                    ((pad_y, target_imsize[0] - resized_im.shape[0] - pad_y),
+                     (pad_x, target_imsize[1] - resized_im.shape[1] - pad_x)), 
+                    mode=padding_mode,
+                    constant_values=cval)
+                return padded_im
+            im = resize_and_pad_image(im, TARGET_IMSIZE, cval=TARGET_IMRANGE[0])
+            voxelspacing[0] /= im.shape[0] / cur_imsize[0]; voxelspacing[1] /= im.shape[1] / cur_imsize[1]; 
             pixelspacing = voxelspacing[:2]
-            affine = nib.affines.rescale_affine(affine, cur_imsize+(1,), tuple(pixelspacing)+(affine[2][2],), imsize+(1,))
-         
+            affine = nib.affines.rescale_affine(affine, cur_imsize+(1,), tuple(pixelspacing)+(affine[2][2],), im.shape+(1,))
+             
         write_nii(im, affine, voxelspacing, path)
     
     #implants detection for QC
